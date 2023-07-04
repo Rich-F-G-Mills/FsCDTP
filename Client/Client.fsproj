@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>FsCDTP</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.MD" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Dispatchable.fs" />
+    <Compile Include="Extensions.fs" />
+    <Compile Include="Events.fs" />
+    <Compile Include="WebSocket.fs" />
+    <Compile Include="Controller.fs" />
+    <Compile Include="Builder.fs" />
+    <Compile Include="BuilderPrimitives.fs" />
+    <Compile Include="Helpers.fs" />
+  </ItemGroup>
+
+  <ItemGroup />
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Control.Reactive" Version="5.0.5" />
+    <PackageReference Include="FSharp.Json" Version="0.4.1" />
+    <PackageReference Include="FsToolkit.ErrorHandling" Version="4.15.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Protocol\Protocol.fsproj" />
+  </ItemGroup>
+
+
+</Project>
