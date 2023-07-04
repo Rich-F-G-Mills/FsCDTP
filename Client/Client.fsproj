@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<RootNamespace>FsCDTP</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Common.fs" />
+    <Compile Include="Events.fs" />
+    <Compile Include="Websocket.fs" />
+    <Compile Include="Transport.fs" />
+    <Compile Include="Builder.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Control.Reactive" Version="5.0.5" />
+    <PackageReference Include="FSharp.Json" Version="0.4.1" />
+    <PackageReference Include="FSharpx.Async" Version="1.14.1" />
+    <PackageReference Include="FSharpx.Extras" Version="3.1.0" />
+    <PackageReference Include="FsToolkit.ErrorHandling" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Protocol\Protocol.fsproj" />
+  </ItemGroup>
+
+</Project>
