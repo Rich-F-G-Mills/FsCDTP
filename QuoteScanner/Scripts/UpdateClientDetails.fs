@@ -2,7 +2,6 @@
 module internal UpdateClientDetails
 
 open System
-open System.IO
 open Protocol
 open Client
 
@@ -89,7 +88,7 @@ let execute logger (retirementDate: DateOnly) clientRecord =
         do logger "  Taking screenshot."
 
         let screenshotPath =
-            sprintf """%s\%s --- %s (LIFE 1).jpg"""
+            sprintf """%s\INPUTS --- %s --- %s (LIFE 1).jpg"""
                 screenshotFolder
                 (retirementDate.ToString ("yyyy-MM-dd"))
                 clientRecord.Description                
@@ -147,7 +146,7 @@ let execute logger (retirementDate: DateOnly) clientRecord =
             do logger "  Taking screenshot."
 
             let screenshotPath =
-                sprintf """%s\%s --- %s (LIFE 2).jpg"""
+                sprintf """%s\INPUTS --- %s --- %s (LIFE 2).jpg"""
                     screenshotFolder
                     (retirementDate.ToString ("yyyy-MM-dd"))
                     clientRecord.Description

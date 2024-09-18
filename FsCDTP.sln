@@ -7,14 +7,12 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Protocol", "Protocol\Protoc
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Client", "Client\Client.fsproj", "{DD858E21-FF12-46AB-9107-56F4E963499D}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CDTPPlay", "CDTPPlay\CDTPPlay.fsproj", "{7009D1DA-983C-4FA9-B252-657205B2ECB6}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "QuoteScanner", "QuoteScanner\QuoteScanner.fsproj", "{7009D1DA-983C-4FA9-B252-657205B2ECB6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B8EEBFB-42A1-49E9-B523-E54CAB1A3214}"
 	ProjectSection(SolutionItems) = preProject
 		README.MD = README.MD
 	EndProjectSection
-EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "MailboxPlay", "MailboxPlay\MailboxPlay.fsproj", "{D53059E6-6342-4B19-ADE2-9BB1B647973B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +32,6 @@ Global
 		{7009D1DA-983C-4FA9-B252-657205B2ECB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7009D1DA-983C-4FA9-B252-657205B2ECB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7009D1DA-983C-4FA9-B252-657205B2ECB6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D53059E6-6342-4B19-ADE2-9BB1B647973B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D53059E6-6342-4B19-ADE2-9BB1B647973B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D53059E6-6342-4B19-ADE2-9BB1B647973B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D53059E6-6342-4B19-ADE2-9BB1B647973B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

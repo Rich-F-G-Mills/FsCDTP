@@ -2,13 +2,16 @@
 module internal RequestClientQuotes
 
 open System
-open System.IO
 open System.Text.RegularExpressions
 open FSharp.Data
 open FSharpx.Text
 open FsToolkit.ErrorHandling
 open Protocol
 open Client
+
+
+let [<Literal>] private screenshotFolder =
+    """C:\Users\Millch\Documents\FsCDTP\SCREENSHOTS"""
 
 
 let private rePensionAmount =
@@ -81,7 +84,7 @@ let private extractQuotesFromPage nid =
     }
 
 
-let execute logger (clientRecord: ClientRecord) =
+let execute logger (retirementDate: DateOnly) (clientRecord: ClientRecord) =
     protocolScript {
         do logger (sprintf "--- REQUESTING QUOTES FOR CLIENT '%s' ---" clientRecord.Description)
 
@@ -186,6 +189,19 @@ let execute logger (clientRecord: ClientRecord) =
             awaitQuotes 0
 
         do logger (sprintf "   %i quotes received." quoteResultsNodeIds.Length)
+
+        do! clickButton ".show-more-Lifetime"
+
+        // Wait for page to respond.
+        do! Async.Sleep 1_000
+
+        let screenshotPath =
+            sprintf """%s\QUOTES --- %s --- %s (LIFE 2).jpg"""
+                screenshotFolder
+                (retirementDate.ToString ("yyyy-MM-dd"))
+                clientRecord.Description
+                    
+        do! takeScreenshot screenshotPath
 
         let! clientQuotes =
             quoteResultsNodeIds

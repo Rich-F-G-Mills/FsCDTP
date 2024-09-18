@@ -1,10 +1,7 @@
 ﻿
 open System
 open System.Reactive
-open System.Text.RegularExpressions
 open FSharp.Control.Reactive
-open FSharp.Data
-open FSharpx.Text
 open FsToolkit.ErrorHandling
 
 open Client
@@ -12,6 +9,9 @@ open Client
 
 let private retirementDate =
     DateOnly(2024, 6, 30)
+
+let [<Literal>] private stateDB =
+    """C:\Users\Millch\Documents\FsCDTP\QuoteScanner\state.db"""
 
 
 [<RequireQualifiedAccess>]
@@ -22,7 +22,7 @@ module private ScriptStage =
             do logger (sprintf "STATE --- AWAITING QUOTES FOR CLIENT #%s." state.QuotesRequiredFor.Description)
 
             let! clientQuotes =
-                runWithoutStateChange (RequestClientQuotes.execute logger state.QuotesRequiredFor)
+                runWithoutStateChange (RequestClientQuotes.execute logger retirementDate state.QuotesRequiredFor)
 
             let nextState =
                 state.ConfirmQuotes clientQuotes
@@ -133,7 +133,7 @@ let private mainAsync =
         do userLogger "Reading state from database..."
 
         use persistentState =
-            SqlitePersistency.create "state.db" retirementDate false
+            SqlitePersistency.create stateDB retirementDate false
 
         do userLogger "Creating websocket... "
 
