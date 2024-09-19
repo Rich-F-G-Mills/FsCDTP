@@ -87,27 +87,6 @@ let rec private script logger state =
     }
 
 
-let updateDOB =
-    protocolScript {
-        let! targets =
-            Protocol.Target.getTargets
-
-        let target =
-            targets
-            |> List.filter (fun t -> t.url.EndsWith("3665528"))
-            |> List.exactlyOne
-
-        let! _ =
-            Helpers.attachTargetAndSwitchSession target.targetId
-
-        do! populateEditBox "#DOB" "01/08/1970"
-
-        do! focus "#Title"
-
-        do! clickButton "#btnSave"
-    }
-
-
 let private mainAsync =
     asyncResult {       
         use logSubject =

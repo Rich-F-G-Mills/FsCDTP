@@ -364,7 +364,7 @@ let create dbFilePath (retDate: DateOnly) forceReset =
             dbConn.CreateCommand ()
 
         do dbCommand.CommandText <-
-            File.ReadAllText "DbSchema.txt"
+            File.ReadAllText "DbSchema.sql"
 
         do ignore <| dbCommand.ExecuteNonQuery ()
 
