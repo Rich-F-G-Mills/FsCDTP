@@ -12,8 +12,6 @@ let [<Literal>] private screenshotFolder =
 
 let execute logger (retirementDate: DateOnly) clientRecord =
     protocolScript {
-        do logger (sprintf "--- UPDATING DETAILS FOR CLIENT '%s' ---" clientRecord.Description)
-
         do logger "  Opening first life client details screen..."
 
         let (ClientID cid) =
@@ -32,54 +30,51 @@ let execute logger (retirementDate: DateOnly) clientRecord =
 
         do! awaitTimeoutAsync (TimeSpan.FromSeconds 5) stoppedLoadingEvent
 
-        let! l1RootNode =
-            DOM.getDocument (Some 0)
-
-        let! l1DobNodeId =
-            DOM.querySelector l1RootNode.nodeId "#DOB"
-
         let l1Dob =
             retirementDate.AddYears (-clientRecord.Life1.RetirementAge)
 
         let newL1DobStr =
             l1Dob.ToString ("dd/MM/yyyy")
 
-        let! currentL1DobInputAttribs =
-            getAttributes l1DobNodeId
-
-        let currentL1DobStr =
-            currentL1DobInputAttribs["value"]
+        let! currentL1DobStr =
+            getAttributeValue "#DOB" "value"
 
         if currentL1DobStr <> newL1DobStr then
             do logger "  Updating life 1 DOB."
 
-            do! DOM.setAttributeValue (l1DobNodeId, "value", newL1DobStr)
+            do! populateEditBox "#DOB" newL1DobStr
         else
             do logger "  No life 1 DOB update needed."
-
-        let! retDateNodeId =
-            DOM.querySelector l1RootNode.nodeId "#RetirementDate"
 
         let newRetDateStr =
             retirementDate.ToString ("dd/MM/yyyy")
 
-        let! currentRetDateInputAttribs =
-            getAttributes retDateNodeId
-
-        let currentRetDateStr =
-            currentRetDateInputAttribs["value"]
+        let! currentRetDateStr =
+            getAttributeValue "#RetirementDate" "value"
 
         if currentRetDateStr <> newRetDateStr then
             do logger "  Updating retirement date."
-            
-            do! DOM.setAttributeValue (retDateNodeId, "value", newRetDateStr)
+
+            do! populateEditBox "#RetirementDate" newRetDateStr
         else
             do logger "  No retirement date update needed."
 
         if currentL1DobStr <> newL1DobStr || currentRetDateStr <> newRetDateStr then
-            do logger "  Submitting changes."
+            do logger "  Submitting changes and waiting."
+
+            // Make sure all keyboard inputs have been flushed through.
+            do! Async.Sleep 1_000
+
+            // Need to draw focus away from the text boxes so that changes are recognised.
+            do! focus "#search"
 
             do! clickButton "#btnSave"
+
+            do! awaitTimeoutAsync (TimeSpan.FromSeconds 5) stoppedLoadingEvent
+
+            // By reloading the page we better ensure that our changes have been
+            // persisted before taking the screenshot.
+            do! reloadPage
 
             do! awaitTimeoutAsync (TimeSpan.FromSeconds 5) stoppedLoadingEvent
         else
@@ -109,35 +104,34 @@ let execute logger (retirementDate: DateOnly) clientRecord =
 
             do! awaitTimeoutAsync (TimeSpan.FromSeconds 5) stoppedLoadingEvent
 
-            let! l2RootNode =
-                DOM.getDocument (Some 0)    
-
-            let! l2DobNodeId =
-                DOM.querySelector l2RootNode.nodeId "#DOB"
-
             let l2Dob =
                 retirementDate.AddYears (-life2.RetirementAge)
 
             let newL2DobStr =
-                l2Dob.ToString ("dd/MM/yyyy")
+                l2Dob.ToString ("dd/MM/yyyy")          
 
-            let! currentL2DobInputAttribs =
-                getAttributes l2DobNodeId               
-
-            let currentL2DobStr =
-                currentL2DobInputAttribs["value"]
+            let! currentL2DobStr =
+                getAttributeValue "#DOB" "value"
 
             if currentL2DobStr <> newL2DobStr then
                 do logger "  Updating life 2 DOB."
 
-                do! DOM.setAttributeValue (l2DobNodeId, "value", newL2DobStr)
+                do! populateEditBox "#DOB" newL2DobStr
             else
                 do logger "  No life 2 DOB update needed."
 
             if currentL2DobStr <> newL2DobStr then
                 do logger "  Submitting changes and waiting."
 
+                do! Async.Sleep 1_000
+
+                do! focus "#search"
+
                 do! clickButton "#btnSave"
+
+                do! awaitTimeoutAsync (TimeSpan.FromSeconds 5) stoppedLoadingEvent
+
+                do! reloadPage
 
                 do! awaitTimeoutAsync (TimeSpan.FromSeconds 5) stoppedLoadingEvent
             else

@@ -65,6 +65,21 @@ module DOM =
 
 
     [<RequireQualifiedAccess>]
+    module __Focus =
+        
+        type Parameters =
+            {
+                nodeId: NodeId
+            }
+
+        type Request =
+            ProtocolRequest<Parameters, unit, unit>
+
+    let focus nodeId: __Focus.Request =
+        ProtocolRequest (SessionRequired, domain + "focus", { nodeId = nodeId }, id)
+
+
+    [<RequireQualifiedAccess>]
     module __GetAttributes =
         
         type Parameters =

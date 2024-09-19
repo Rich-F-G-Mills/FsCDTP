@@ -64,7 +64,10 @@ let private runExpression expression =
             Runtime.evaluate parameters
 
         return ()
-    }    
+    }
+
+let reloadPage =
+    runExpression "location.reload()"
 
 let clickButton selector =
     runExpression (sprintf "document.querySelector('%s').click()" selector)
@@ -77,6 +80,80 @@ let private triggerChangeEvent selector =
     
 let private triggerClickEvent selector =
     triggerEvent selector "click"
+
+let nodeIdFromSelector selector =
+    protocolScript {
+        let! rootNode =
+            DOM.getDocument (Some 0)
+
+        let! selectedNodeId =
+            DOM.querySelector rootNode.nodeId selector
+
+        return selectedNodeId
+    }
+
+let focus selector =
+    protocolScript {
+        let! selectedNodeId =
+            nodeIdFromSelector selector
+
+        do! DOM.focus selectedNodeId    
+    }
+
+let getAttributeValue selector attribute =
+    protocolScript {
+        let! selectedNodeId =
+            nodeIdFromSelector selector
+
+        let! attributes =
+            DOM.getAttributes selectedNodeId
+
+        let attributesMap =
+            Map.ofAttributeSeq attributes
+
+        let! attributeValue =
+            attributesMap
+            |> Map.tryFind attribute
+            |> Result.requireSome (
+                ProtocolFailureReason.UserSpecified (
+                    sprintf "Unable to locate attribute '%s' for '%s'." attribute selector))
+
+        return attributeValue
+    }
+
+let setAttributeValue selector attribute value =
+    protocolScript {
+        let! selectedNodeId =
+            nodeIdFromSelector selector
+
+        do! DOM.setAttributeValue (selectedNodeId, attribute, value)
+
+        do! triggerChangeEvent selector
+    }
+
+// https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+let private simulateCharPress (chr: char) =
+    protocolScript {
+        let parameters =
+            { Input.__DispatchKeyEvent.Parameters.Default with
+                ``type`` = "char"
+                text = Some (string chr)
+            }
+
+        do! Input.dispatchKeyEvent parameters
+    }
+
+let populateEditBox selector (str: string) =
+    protocolScript {
+        // Clear out whatever is currently shown.
+        do! setAttributeValue selector "value" ""
+
+        // Set focus so that it will pick up keyboard events.
+        do! focus selector
+
+        for chr in str do
+            do! simulateCharPress chr
+    }
 
 let setComboBoxValue (selector, value) =
     protocolScript {
@@ -101,12 +178,4 @@ let setCheckboxValue (selector, value: bool) =
         do! triggerChangeEvent selector
 
         return ()
-    }
-
-let getAttributes nodeId =
-    protocolScript {
-        let! attributes =
-            DOM.getAttributes nodeId
-
-        return Map.ofAttributeSeq attributes
     }

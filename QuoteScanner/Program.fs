@@ -8,7 +8,7 @@ open Client
 
 
 let private retirementDate =
-    DateOnly(2024, 6, 30)
+    DateOnly(2024, 9, 5)
 
 let [<Literal>] private stateDB =
     """C:\Users\Millch\Documents\FsCDTP\QuoteScanner\state.db"""
@@ -46,8 +46,8 @@ module private ScriptStage =
             match nextState with
             | Choice1Of2 state' ->
                 do! awaitingClientUpdates logger state'
-            | Choice2Of2 _ ->
-                return ()
+            | Choice2Of2 state' ->
+                do! awaitingClientQuotes logger state'
         }
     
     let awaitingClientRecords logger (state: State.AwaitingClientRecords) =
@@ -87,33 +87,25 @@ let rec private script logger state =
     }
 
 
-//let private getQuotes logger cid dbConn =
-//    protocolScript {
-//        let! targets =
-//            Protocol.Target.getTargets
+let updateDOB =
+    protocolScript {
+        let! targets =
+            Protocol.Target.getTargets
 
-//        let quotesTarget =
-//            targets
-//            |> List.filter (fun { url = url } -> url.EndsWith("Results/3452478"))
-//            |> List.exactlyOne
+        let target =
+            targets
+            |> List.filter (fun t -> t.url.EndsWith("3665528"))
+            |> List.exactlyOne
 
-//        let! _ =
-//            Helpers.attachTargetAndSwitchSession quotesTarget.targetId
+        let! _ =
+            Helpers.attachTargetAndSwitchSession target.targetId
 
-//        let! quoteResultsRootNode =
-//            Protocol.DOM.getDocument (Some 0)
+        do! populateEditBox "#DOB" "01/08/1970"
 
-//        let! quoteResultsNodeIds =
-//            Protocol.DOM.querySelectorAll quoteResultsRootNode.nodeId ".list-group-item.product-Lifetime"
+        do! focus "#Title"
 
-//        let! clientQuotes =
-//            quoteResultsNodeIds
-//            |> List.sequenceDispatchableM RequestClientQuotes.extractQuotesFromPage
-
-//        do logger (sprintf "%A" clientQuotes)
-
-//        do SqlitePersistency.Operations.notifyQuotesReceived dbConn cid clientQuotes
-//    }
+        do! clickButton "#btnSave"
+    }
 
 
 let private mainAsync =
@@ -158,9 +150,7 @@ let private mainAsync =
 
         do! runProtocolScript controller (script userLogger persistentState.OpeningState)
 
-        //do SqlitePersistency.Operations.resetQuotesReceived persistentState.Connection
-
-        //do! runProtocolScript controller (getQuotes userLogger (ClientID "3666073") persistentState.Connection)
+        //do! runProtocolScript controller updateDOB
 
         return 0
     }

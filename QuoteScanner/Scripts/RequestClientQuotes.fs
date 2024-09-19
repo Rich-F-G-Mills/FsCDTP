@@ -86,15 +86,13 @@ let private extractQuotesFromPage nid =
 
 let execute logger (retirementDate: DateOnly) (clientRecord: ClientRecord) =
     protocolScript {
-        do logger (sprintf "--- REQUESTING QUOTES FOR CLIENT '%s' ---" clientRecord.Description)
-
         let (ClientID cid) =
             clientRecord.Id
 
         let urlQuoteOptions =
             sprintf "https://amsretirement.co.uk/ams/Client/Main/RetirementOptions/%s" cid
 
-        let! (target, _) =
+        let! _ =
             Helpers.createTargetAndSwitchSession urlQuoteOptions
 
         let! stoppedLoadingEvent =  
@@ -106,11 +104,10 @@ let execute logger (retirementDate: DateOnly) (clientRecord: ClientRecord) =
 
         do! setCheckboxValue ("#SelectedPensions_0_", true)
 
-        let! quoteOptionsRootNode =
-            DOM.getDocument (Some 0)
+        do logger "  Selecting annuity options..."
 
         let! totalPensionNodeId =
-            DOM.querySelector quoteOptionsRootNode.nodeId "#pensionTotal"
+            nodeIdFromSelector "#pensionTotal"
 
         let! totalPensionNode =
             DOM.describeNode (totalPensionNodeId, Some 1)
@@ -179,6 +176,8 @@ let execute logger (retirementDate: DateOnly) (clientRecord: ClientRecord) =
 
         do! Async.Sleep 1_000
 
+        do logger "  Requesting quotes..."
+
         do! clickButton "#btnGetQuotes"
 
         do! awaitTimeoutAsync (TimeSpan.FromSeconds 15) stoppedLoadingEvent
@@ -188,12 +187,14 @@ let execute logger (retirementDate: DateOnly) (clientRecord: ClientRecord) =
         let! quoteResultsNodeIds =
             awaitQuotes 0
 
-        do logger (sprintf "   %i quotes received." quoteResultsNodeIds.Length)
+        do logger (sprintf "  %i quotes received." quoteResultsNodeIds.Length)
 
         do! clickButton ".show-more-Lifetime"
 
         // Wait for page to respond.
         do! Async.Sleep 1_000
+
+        do logger "  Taking screenshot..."
 
         let screenshotPath =
             sprintf """%s\QUOTES --- %s --- %s (LIFE 2).jpg"""

@@ -75,9 +75,7 @@ module (*private*) Operations =
         do dbCommand.CommandText <-
             // Any time we change the retirement date, make sure we
             // clear out everything else.
-            sprintf """DELETE FROM updated;
-                       DELETE FROM clients;
-                       UPDATE state SET value = %s WHERE key = 'RETIREMENT_DATE';""" newRetDateStr
+            sprintf """UPDATE state SET value = %s WHERE key = 'RETIREMENT_DATE';""" newRetDateStr
 
         do ignore <| dbCommand.ExecuteNonQuery ()
 

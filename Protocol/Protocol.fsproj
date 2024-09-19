@@ -10,6 +10,7 @@
 	  <Compile Include="Common.fs" />
 	  <Compile Include="Target.fs" />
 	  <Compile Include="DOM.fs" />
+	  <Compile Include="Input.fs" />
 	  <Compile Include="Network.fs" />
 	  <Compile Include="Page.fs" />
 	  <Compile Include="Runtime.fs" />

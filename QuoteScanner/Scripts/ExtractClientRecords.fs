@@ -85,8 +85,6 @@ let private CLIENT_DESCRIPTION (clientId, description): Parser<ClientRecord, uni
 
 let execute logger =
     protocolScript {
-        do logger "--- EXTRACTING CLIENT INFORMATION ---"
-
         let! rootNode =
             DOM.getDocument (Some 0)
 

@@ -24,17 +24,8 @@ type ProtocolScriptBuilder internal () =
     member _.Run (delayed: unit -> Dispatchable<_>) =
         delayed ()
 
-    member _.Combine (Dispatchable first: Dispatchable<unit>, second: unit -> Dispatchable<_>) =
-        Dispatchable (fun (state, controller) ->
-            asyncResult {
-                let! (newState, _) =
-                    first (state, controller)
-
-                let (Dispatchable second') =
-                    second ()
-
-                return! second' (newState, controller)
-            })
+    member _.Combine (first, second) =
+        Dispatchable.combine (first, second)
 
     member _.While (pred, body) =
         Dispatchable.whileLoop (pred, body)
