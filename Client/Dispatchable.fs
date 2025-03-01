@@ -86,7 +86,8 @@ module Dispatchable =
                 use ie =
                     collection.GetEnumerator ()
 
-                let body' () =
+                // No need to defer execution by defining as function.
+                let body' =
                     Dispatchable (fun (state', _) ->
                         asyncResult {
                             let (Dispatchable body') =
@@ -99,7 +100,7 @@ module Dispatchable =
                         })
                         
                 let (Dispatchable loop) =
-                    whileLoop (ie.MoveNext, body')
+                    whileLoop (ie.MoveNext, fun _ -> body')
 
                 return! loop (state, controller)
             })

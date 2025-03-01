@@ -258,6 +258,7 @@ module Controller =
                             let! ct =
                                 Async.CancellationToken
 
+                            // Will automatically unregister CT callback on return below.				
                             use _registration =
                                 ct.Register (fun _ ->
                                     do mbox.Post (ControllerAction.CancelMethodCall idx))
